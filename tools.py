@@ -280,6 +280,60 @@ def execute_tool(tool_name: str, tool_args: Dict[str, Any]) -> str:
     except Exception as e:
         return f"❌ Error: Tool '{tool_name}' failed - {str(e)}"
 
+# Tool schemas for Claude API - tell the LLM about available tools
+TOOL_SCHEMAS = [
+    {
+        "name": "calculator_tool",
+        "description": "Perform mathematical calculations safely. Supports basic operations (+, -, *, /, **) and functions like sqrt, sin, cos, tan, log, abs. Use this for any mathematical computation.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "expression": {
+                    "type": "string", 
+                    "description": "Mathematical expression to evaluate. Examples: '2 + 3 * 4', 'sqrt(16)', 'sin(pi/2)', '15 * 847 / 100'"
+                }
+            },
+            "required": ["expression"]
+        }
+    },
+    {
+        "name": "get_current_time",
+        "description": "Get the current time in any timezone worldwide. Use this when users ask about current time, what time it is somewhere, or time-related questions.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "timezone": {
+                    "type": "string",
+                    "description": "Timezone string. Examples: 'UTC', 'US/Eastern', 'US/Pacific', 'Europe/London', 'Asia/Tokyo', 'Australia/Sydney'. Defaults to UTC if not specified.",
+                    "default": "UTC"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "web_search",
+        "description": "Search the web for current information, facts, definitions, or topics not in my training data. Use this when users ask about recent events, want to look something up, or need current information.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search terms or question to search for. Be specific and clear."
+                },
+                "num_results": {
+                    "type": "integer", 
+                    "description": "Number of results to return (1-5). Default is 3.",
+                    "default": 3,
+                    "minimum": 1,
+                    "maximum": 5
+                }
+            },
+            "required": ["query"]
+        }
+    }
+]
+
 # Test function to verify tools work correctly
 def test_all_tools():
     """Test all tools to verify they work correctly"""
